@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "venue": {
+      ".read": true,
+      ".write": "auth != null && auth.token.admin == true"
+    }
+  }
+}
