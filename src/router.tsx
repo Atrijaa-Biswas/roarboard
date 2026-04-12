@@ -26,7 +26,14 @@ const router = createBrowserRouter([
   },
 ]);
 
+import { useRealtimeCrowd } from './hooks/useRealtimeCrowd';
+import { useGateWaits } from './hooks/useGateWaits';
+
 export function AppRouter() {
+  // Global Realtime Engines (Mutations via Zustand)
+  useRealtimeCrowd();
+  useGateWaits();
+
   return (
     <AuthProvider>
       <RouterProvider router={router} />

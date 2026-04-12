@@ -3,5 +3,10 @@
 @tailwind utilities;
 
 body {
-  @apply bg-[#0a0a0a] text-[#e6edf3];
+  @apply bg-pureBlack text-textPrimary overflow-hidden;
+}
+
+/* Glass panel utility (Solid backgrounds inside use bg-surface directly) */
+.glass-panel {
+  @apply bg-surface/75 backdrop-blur-xl border border-borderSecondary/50 shadow-2xl;
 }

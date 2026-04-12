@@ -17,7 +17,7 @@ describe('geminiService: submitGeminiQuery', () => {
     (globalThis.fetch as any).mockResolvedValue(mockResponse);
 
     let result = '';
-    await submitGeminiQuery('Hi', [], (chunk) => { result += chunk; });
+    await submitGeminiQuery('Hi', [], {}, (chunk: string) => { result += chunk; });
     expect(result).toBe('hello');
     expect(globalThis.fetch).toHaveBeenCalledWith(expect.stringContaining('geminiProxy'), expect.any(Object));
   });
@@ -25,6 +25,6 @@ describe('geminiService: submitGeminiQuery', () => {
   it('should handle 429 rate limits', async () => {
     (globalThis.fetch as any).mockResolvedValue({ ok: false, status: 429 });
     
-    await expect(submitGeminiQuery('Hi', [], () => {})).rejects.toThrow("You've reached the API limit. Please try again in a minute.");
+    await expect(submitGeminiQuery('Hi', [], {}, () => {})).rejects.toThrow("You've reached the API limit. Please try again in a minute.");
   });
 });

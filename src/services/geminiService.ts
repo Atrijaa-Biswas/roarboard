@@ -1,5 +1,3 @@
-import { useVenueStore } from '../store/useVenueStore';
-
 // Point completely to the deployed remote Cloud Function Proxy exclusively
 const PROXY_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL || 'https://us-central1-roarboard-9b104.cloudfunctions.net/geminiProxy';
 
@@ -16,10 +14,9 @@ const getSessionId = () => {
 export async function submitGeminiQuery(
   message: string,
   history: any[],
+  venueContext: any, // Contains userPrefs, activePath, trends
   onChunk: (text: string) => void
 ) {
-  const venueData = useVenueStore.getState();
-
   const response = await fetch(PROXY_URL, {
     method: 'POST',
     headers: {
@@ -28,7 +25,7 @@ export async function submitGeminiQuery(
     body: JSON.stringify({
       message,
       history,
-      venueData,
+      venueData: venueContext,
       sessionId: getSessionId()
     }),
   });

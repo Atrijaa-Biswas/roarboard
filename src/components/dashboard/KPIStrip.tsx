@@ -1,29 +1,74 @@
 import { useVenueStore } from '../../store/useVenueStore';
+import { useAlertStore } from '../../store/useAlertStore';
 
-const KPICard = ({ label, value, colorClass }: { label: string, value: string, colorClass?: string }) => (
-  <div className="bg-surface border border-borderSecondary p-3 rounded-lg flex flex-col justify-center transition-transform hover:scale-[1.02]">
-    <span className="text-[9px] uppercase tracking-[0.06em] text-textSecondary mb-1 font-semibold">{label}</span>
-    <span className={`text-xl font-bold ${colorClass || 'text-textPrimary'}`}>{value}</span>
+interface KPICardProps {
+  label: string;
+  value: string;
+  colorClass?: string;
+  subtext?: string;
+}
+
+const KPICard = ({ label, value, colorClass, subtext }: KPICardProps) => (
+  <div className="glass-panel px-4 py-2 rounded-full flex items-center justify-between gap-3 shadow-lg hover:shadow-xl transition-all hover:border-textSecondary/30 min-w-0">
+    <span className="text-[10px] uppercase font-bold text-textSecondary tracking-wider whitespace-nowrap">{label}</span>
+    <div className="flex flex-col items-end">
+      <span className={`text-base font-black ${colorClass || 'text-white'} drop-shadow-sm leading-none`}>{value}</span>
+      {subtext && <span className="text-[9px] text-textSecondary/60 leading-none mt-0.5">{subtext}</span>}
+    </div>
   </div>
 );
 
 export default function KPIStrip() {
   const sections = useVenueStore((state) => state.sections);
-  const gates = useVenueStore((state) => state.gates);
+  const gates    = useVenueStore((state) => state.gates);
+  const alerts   = useAlertStore((state) => state.alerts);
 
-  const totalFans = Object.values(sections || {}).reduce((acc, section) => acc + (section.currentCount || 0), 0);
-  const totalCapacity = Object.values(sections || {}).reduce((acc, section) => acc + (section.capacity || 0), 0);
-  const capacityPercent = totalCapacity > 0 ? Math.round((totalFans / totalCapacity) * 100) : 0;
+  // Dynamic computations — never static
+  const totalFans = Object.values(sections).reduce((acc, s) => acc + (s.currentCount ?? 0), 0);
+  const totalCap  = Object.values(sections).reduce((acc, s) => acc + (s.capacity ?? 0), 0);
+  const capacityPct = totalCap > 0 ? Math.round((totalFans / totalCap) * 100) : 0;
 
-  const totalWait = Object.values(gates || {}).reduce((acc, gate) => acc + (gate.waitMinutes || 0), 0);
-  const avgWait = Object.keys(gates || {}).length > 0 ? Math.round(totalWait / Object.keys(gates || {}).length) : 0;
+  const gateValues = Object.values(gates);
+  const avgWait = gateValues.length > 0
+    ? Math.round(gateValues.reduce((acc, g) => acc + g.waitMinutes, 0) / gateValues.length)
+    : 0;
+
+  const activeAlertCount = alerts.length;
+  const criticalCount    = alerts.filter((a) => a.severity === 'critical').length;
+
+  const capacityColor =
+    capacityPct >= 95 ? 'text-accentRose' :
+    capacityPct >= 80 ? 'text-accentWarning' :
+    'text-accentEmerald';
+
+  const waitColor =
+    avgWait > 25 ? 'text-accentRose' :
+    avgWait > 12 ? 'text-accentWarning' :
+    'text-accentEmerald';
 
   return (
-    <section className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 w-full">
-      <KPICard label="Total Fans" value={totalFans.toLocaleString()} />
-      <KPICard label="Capacity %" value={`${capacityPercent}%`} colorClass={capacityPercent > 80 ? "text-accentWarning" : capacityPercent > 95 ? "text-accentCoral" : ""} />
-      <KPICard label="Avg Wait" value={`${avgWait}m`} />
-      <KPICard label="Active Alerts" value="0" colorClass="text-accentCoral" />
+    <section className="flex flex-wrap items-center justify-center lg:justify-end gap-3 w-full animate-slideUp">
+      <KPICard
+        label="Est. Fans"
+        value={totalFans.toLocaleString()}
+        subtext={`of ${totalCap.toLocaleString()}`}
+      />
+      <KPICard
+        label="Capacity"
+        value={`${capacityPct}%`}
+        colorClass={capacityColor}
+      />
+      <KPICard
+        label="Avg Wait"
+        value={`${avgWait}m`}
+        colorClass={waitColor}
+      />
+      <KPICard
+        label="Alerts"
+        value={String(activeAlertCount)}
+        colorClass={criticalCount > 0 ? 'text-accentRose animate-pulse' : activeAlertCount > 0 ? 'text-accentWarning' : 'text-accentEmerald'}
+        subtext={criticalCount > 0 ? `${criticalCount} critical` : undefined}
+      />
     </section>
   );
 }

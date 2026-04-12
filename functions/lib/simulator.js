@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.simulateData = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
-exports.simulateData = (0, scheduler_1.onSchedule)('every 1 minutes', async (event) => {
+exports.simulateData = (0, scheduler_1.onSchedule)('every 1 minutes', async (_event) => {
     const db = admin.database();
     // Update Gates
     const gates = ['A', 'B', 'C', 'D', 'E', 'F'];
