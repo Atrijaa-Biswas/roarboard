@@ -50,6 +50,7 @@ interface VenueState {
   setIsFocusMode: (isFocus: boolean) => void;
   setFollowMode: (follow: boolean) => void;
   addPoints: (pts: number) => void;
+  deployStaffToZone: (zoneKey: string, staffCount: number) => void;
   setSections: (sections: Record<string, Partial<SectionData>>) => void;
   setGates: (gates: Record<string, Partial<GateData>>) => void;
   setTicker: (ticker: TickerItem[]) => void;
@@ -95,6 +96,24 @@ export const useVenueStore = create<VenueState>((set) => ({
   setIsFocusMode: (isFocus) => set({ isFocusMode: isFocus }),
   setFollowMode: (follow) => set({ isFollowMode: follow }),
   addPoints: (pts) => set((state) => ({ userPrefs: { ...state.userPrefs, points: state.userPrefs.points + pts } })),
+  // Deploy staff -> immediately reduces congestion (attendee-visible effect)
+  deployStaffToZone: (zoneKey, staffCount) => set((state) => {
+    const reduction = staffCount * 3;
+    const newGates = { ...state.gates };
+    const newSections = { ...state.sections };
+    if (CANONICAL_GATE_KEYS.has(zoneKey) && newGates[zoneKey]) {
+      const g = newGates[zoneKey];
+      const newWait = Math.max(0, g.waitMinutes - reduction);
+      const newStatus = newWait > 30 ? 'high' : newWait > 15 ? 'medium' : 'low';
+      newGates[zoneKey] = { ...g, waitMinutes: newWait, status: newStatus, trend: 'decreasing', updatedAt: Date.now() };
+    } else if (newSections[zoneKey]) {
+      const s = newSections[zoneKey];
+      const newDensity = Math.max(0, s.density - staffCount * 2);
+      const newCount = Math.round((newDensity / 100) * s.capacity);
+      newSections[zoneKey] = { ...s, density: newDensity, currentCount: newCount, trend: 'decreasing', updatedAt: Date.now() };
+    }
+    return { gates: newGates, sections: newSections };
+  }),
 
   setSections: (sections) => set((state) => {
     const newSections = { ...state.sections };
@@ -175,3 +194,5 @@ export const useVenueStore = create<VenueState>((set) => ({
   setTicker: (ticker) => set({ ticker }),
   updateUserPrefs: (prefs) => set((state) => ({ userPrefs: { ...state.userPrefs, ...prefs } }))
 }));
+
+

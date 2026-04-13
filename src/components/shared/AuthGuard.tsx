@@ -7,8 +7,8 @@ export default function AuthGuard({ children }: { children?: React.ReactNode }) 
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-pureBlack flex items-center justify-center font-sans tracking-wide">
-        <div className="animate-pulse text-accentCoral font-bold text-sm uppercase">Authenticating...</div>
+    <div className="min-h-screen bg-pureBlack flex items-center justify-center font-sans tracking-wide">
+        <div className="animate-pulse text-accentBlue font-bold text-sm uppercase">Authenticating...</div>
       </div>
     );
   }
