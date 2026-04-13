@@ -72,6 +72,9 @@ const initialGates: Record<string, GateData> = {
   gF: { name: 'Gate F', waitMinutes: 1, status: 'low', updatedAt: Date.now(), trend: 'stable', rate: 0.0, confidence: 99, history: [] },
 };
 
+// The ONLY valid gate keys — any other keys from Firebase are rejected
+const CANONICAL_GATE_KEYS = new Set(['gA', 'gB', 'gC', 'gD', 'gE', 'gF']);
+
 const initialTicker: TickerItem[] = [
   { text: 'Welcome to RoarBoard! Secure, Smart, Instantly Responsive.', priority: 1, createdAt: Date.now() },
   { text: 'Current Wait Time at Gate C is High. Please divert to Gate B or D.', priority: 2, createdAt: Date.now() },
@@ -135,6 +138,8 @@ export const useVenueStore = create<VenueState>((set) => ({
     const newGates = { ...state.gates };
     const now = Date.now();
     for (const [key, gate] of Object.entries(gates)) {
+      // Reject any key that isn't one of the 6 canonical gates
+      if (!CANONICAL_GATE_KEYS.has(key)) continue;
       const old = newGates[key];
       const history = old?.history || [];
       const waitMinutes = gate.waitMinutes ?? old?.waitMinutes ?? 0;
