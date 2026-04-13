@@ -221,7 +221,7 @@ export default function StaffDashboard() {
 
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen flex flex-col w-full bg-pureBlack text-textPrimary">
+    <div className="h-screen flex flex-col w-full bg-pureBlack text-textPrimary overflow-y-auto">
       {toast && <Toast message={toast} onDone={() => setToast(null)} />}
       <Navbar />
 
@@ -240,7 +240,7 @@ export default function StaffDashboard() {
           </div>
           <button
             onClick={() => logout().then(() => navigate('/'))}
-            className="flex items-center gap-2 text-textSecondary hover:text-accentRose transition-colors text-sm font-bold"
+            className="flex items-center gap-2 text-textSecondary hover:text-accentRose transition-colors text-sm font-bold md:hidden"
           >
             <LogOut className="w-4 h-4" />
             Log Out
