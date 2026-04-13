@@ -69,6 +69,7 @@ export default function StadiumMap() {
   const sections      = useVenueStore((state) => state.sections);
   const gatesDict     = useVenueStore((state) => state.gates);
   const activePath    = useVenueStore((state) => state.activePath);
+  const setActivePath = useVenueStore((state) => state.setActivePath);
   const followMode    = useVenueStore((state) => state.isFollowMode);
   const setFollowMode = useVenueStore((state) => state.setFollowMode);
 
@@ -202,13 +203,14 @@ export default function StadiumMap() {
 
           {/* Live Navigation UI Toast (Wow Factor) */}
           {activePath && activePath.length > 0 && (
-             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-pureBlack/90 backdrop-blur-md border border-accentBlue text-white px-4 py-2 rounded-full shadow-[0_0_20px_-3px_rgba(59,130,246,0.5)] font-bold text-xs flex items-center gap-2 animate-in slide-in-from-top-4 duration-500">
+             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-pureBlack/90 backdrop-blur-md border border-accentBlue text-white px-4 py-2 rounded-full shadow-[0_0_20px_-3px_rgba(59,130,246,0.5)] font-bold text-xs flex items-center gap-2 animate-in slide-in-from-top-4 duration-500 pointer-events-auto">
                 <span className="w-2 h-2 rounded-full bg-accentBlue animate-pulse"></span>
                 Navigating to {gatesDict[activePath[activePath.length - 1]]?.name || 'Destination'} (Optimal Route)
                 
                 <button 
-                  onClick={() => useVenueStore.getState().setActivePath([])} 
-                  className="ml-4 bg-white/10 hover:bg-white/20 transition-colors px-2 py-1 rounded-full text-[9px] uppercase tracking-wider border border-white/20"
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setActivePath([]); }} 
+                  className="ml-4 bg-white/10 hover:bg-white/20 transition-colors px-2 py-1 rounded-full text-[9px] uppercase tracking-wider border border-white/20 pointer-events-auto"
                 >
                    Exit
                 </button>
