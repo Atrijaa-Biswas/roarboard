@@ -43,6 +43,19 @@ graph TD
 - **Firebase Performance Monitoring**: Analyses render logic and streaming latency speeds.
 - **Google Charts API**: Generates insightful line and bar analytic panels for staff.
 
+## Tech Stack (Core Utilities)
+While the core backend heavily relies on Google Services integrations setup outlined above, the frontend utilizes:
+- **Framework:** [React 18](https://react.dev/) bundled via [Vite](https://vitejs.dev/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [Lucide React](https://lucide.dev/) for a dynamic, responsive UI
+- **State Management:** [Zustand](https://docs.pmnd.rs/zustand/) for performant, frictionless state access
+- **Routing:** [React Router](https://reactrouter.com/) for fast page navigations
+- **Data Visualization:** [React Google Charts](https://www.react-google-charts.com/) for rich dashboard analytics
+
+## Prerequisites
+Ensure your local environment meets the following requirements before proceeding:
+- **Node.js** (v18 or higher recommended)
+- **npm** or **yarn** package manager
+
 ## Local Setup
 ```bash
 git clone <repository_url>
@@ -80,3 +93,8 @@ npm run test:e2e
 
 ## Accessibility
 Roarboard strictly conforms to WCAG 2.1 AA parameters. Significant considerations include enforcing a minimum color contrast of 4.5:1, deep DOM support for screen readers via `aria-live` elements, motion reduction wrappers mapping to OS `prefers-reduced-motion` settings, and total keyboard navigability without mouse reliance.
+
+## Roadmap & Future Enhancements
+- **Granular Analytics**: Fusing ticket scan data with vendor supply-chain APIs for advanced predictive insights.
+- **AR Pathway Navigation**: Leveraging mobile camera feeds for seamless, visually-guided section finding.
+- **Global Localization**: Auto-translating AI guidance via Gemini models into the native languages of international attendees.
