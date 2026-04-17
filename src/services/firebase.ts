@@ -8,14 +8,14 @@ import { getPerformance } from 'firebase/performance';
 import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyBKtbYxdZg3T4SjcVXeqjKNr1aQQp_El0w",
+  authDomain: "roarboard-9b104.firebaseapp.com",
+  databaseURL: "https://roarboard-9b104-default-rtdb.firebaseio.com",
+  projectId: "roarboard-9b104",
+  storageBucket: "roarboard-9b104.firebasestorage.app",
+  messagingSenderId: "552857258785",
+  appId: "1:552857258785:web:ebb52fe5ca890af23dcc60",
+  measurementId: "G-0FPDPKHHV8",
 };
 
 const app = initializeApp(firebaseConfig);
