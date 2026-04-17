@@ -5,12 +5,13 @@ import { useVenueStore } from '../store/useVenueStore';
 import { useAlertStore } from '../store/useAlertStore';
 import { useStaffStore, type IncidentType, type IncidentStatus } from '../store/useStaffStore';
 import { useUserStore } from '../store/useUserStore';
+import { useFoodStore } from '../store/useFoodStore';
 import { logout } from '../hooks/useAuth';
 import {
   Activity, AlertTriangle, Users, Megaphone, ClipboardList,
   ScrollText, CheckCircle2, Bot, ThumbsDown, ChevronRight,
   Plus, RefreshCw, LogOut, Zap, TrendingUp, TrendingDown,
-  Minus, Clock, Shield, Radio,
+  Minus, Clock, Shield, Radio, ForkKnife,
 } from 'lucide-react';
 
 // ── Chart-less sparkline using SVG ───────────────────────────────────────────
@@ -75,11 +76,12 @@ function minutesUntilCritical(waitMinutes: number, ratePerMin: number): number |
 }
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
-type Tab = 'overview' | 'gates' | 'crowds' | 'alerts' | 'incidents' | 'log';
+type Tab = 'overview' | 'gates' | 'crowds' | 'stalls' | 'alerts' | 'incidents' | 'log';
 const TABS: { key: Tab; label: string; icon: any }[] = [
   { key: 'overview',   label: 'Overview',    icon: Activity },
   { key: 'gates',      label: 'Gates',       icon: ChevronRight },
   { key: 'crowds',     label: 'Crowds',      icon: Users },
+  { key: 'stalls',     label: 'Food Stalls', icon: ForkKnife },
   { key: 'alerts',     label: 'Alerts',      icon: Megaphone },
   { key: 'incidents',  label: 'Incidents',   icon: ClipboardList },
   { key: 'log',        label: 'System Log',  icon: ScrollText },
@@ -107,6 +109,8 @@ export default function StaffDashboard() {
   const gates    = useVenueStore(s => s.gates);
   const sections = useVenueStore(s => s.sections);
   const deployStaffToZone = useVenueStore(s => s.deployStaffToZone);
+
+  const { stalls, updateStallStatus } = useFoodStore();
 
   const alerts      = useAlertStore(s => s.alerts);
   const addAlert    = useAlertStore(s => s.addAlert);
@@ -513,6 +517,105 @@ export default function StaffDashboard() {
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════ */}
+        {/* TAB: STALLS                                                       */}
+        {/* ══════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'stalls' && (
+          <div className="flex flex-col gap-4">
+            <div className="overflow-x-auto rounded-xl border border-borderSecondary">
+              <table className="w-full text-sm">
+                <thead className="bg-surface border-b border-borderSecondary">
+                  <tr className="text-textSecondary text-xs uppercase tracking-wider">
+                    <th className="p-4 text-left font-medium">Stall</th>
+                    <th className="p-4 text-left font-medium">Location</th>
+                    <th className="p-4 text-left font-medium">Status</th>
+                    <th className="p-4 text-left font-medium">Open Time</th>
+                    <th className="p-4 text-left font-medium">Close Time</th>
+                    <th className="p-4 text-right font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-borderSecondary bg-pureBlack">
+                  {Object.values(stalls).map(stall => (
+                    <tr key={stall.id} className="hover:bg-surface/50 transition-colors">
+                      <td className="p-4 font-bold text-white">
+                        {stall.name}
+                        <div className="text-xs text-textSecondary font-normal">{stall.category}</div>
+                      </td>
+                      <td className="p-4 text-textSecondary">{stall.near}</td>
+                      <td className="p-4">
+                        <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${stall.isOpen ? 'bg-accentEmerald/20 text-accentEmerald' : 'bg-accentRose/20 text-accentRose'}`}>
+                          {stall.isOpen ? 'OPEN' : 'CLOSED'}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <input
+                          type="time"
+                          value={(() => {
+                            // Convert standard "10:00 AM" back to "10:00" for input
+                            const m = stall.openTime.match(/(\d+):(\d+) (AM|PM)/);
+                            if (!m) return '';
+                            let [_, h, min, ampm] = m;
+                            if (ampm === 'PM' && h !== '12') h = (parseInt(h) + 12).toString();
+                            if (ampm === 'AM' && h === '12') h = '00';
+                            return `${h.padStart(2, '0')}:${min}`;
+                          })()}
+                          onChange={(e) => {
+                            const [h, m] = e.target.value.split(':');
+                            const hour = parseInt(h);
+                            const ampm = hour >= 12 ? 'PM' : 'AM';
+                            const formattedH = hour % 12 === 0 ? 12 : hour % 12;
+                            updateStallStatus(stall.id, { openTime: `${formattedH}:${m} ${ampm}` });
+                            logAction('sys', `Updated open time for ${stall.name}`);
+                          }}
+                          className="bg-transparent border border-borderSecondary rounded px-2 py-1 text-white text-xs focus:outline-none"
+                        />
+                      </td>
+                      <td className="p-4">
+                         <input
+                          type="time"
+                          value={(() => {
+                            const m = stall.closeTime.match(/(\d+):(\d+) (AM|PM)/);
+                            if (!m) return '';
+                            let [_, h, min, ampm] = m;
+                            if (ampm === 'PM' && h !== '12') h = (parseInt(h) + 12).toString();
+                            if (ampm === 'AM' && h === '12') h = '00';
+                            return `${h.padStart(2, '0')}:${min}`;
+                          })()}
+                          onChange={(e) => {
+                            const [h, m] = e.target.value.split(':');
+                            const hour = parseInt(h);
+                            const ampm = hour >= 12 ? 'PM' : 'AM';
+                            const formattedH = hour % 12 === 0 ? 12 : hour % 12;
+                            updateStallStatus(stall.id, { closeTime: `${formattedH}:${m} ${ampm}` });
+                            logAction('sys', `Updated close time for ${stall.name}`);
+                          }}
+                          className="bg-transparent border border-borderSecondary rounded px-2 py-1 text-white text-xs focus:outline-none"
+                        />
+                      </td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => {
+                            updateStallStatus(stall.id, { isOpen: !stall.isOpen });
+                            logAction('toggle', `${stall.name} marked as ${!stall.isOpen ? 'OPEN' : 'CLOSED'}`);
+                            showToast(`${stall.name} ${!stall.isOpen ? 'opened' : 'closed'}`);
+                          }}
+                          className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                            stall.isOpen 
+                              ? 'bg-accentRose/20 hover:bg-accentRose/40 text-accentRose border border-accentRose/30'
+                              : 'bg-accentEmerald/20 hover:bg-accentEmerald/40 text-accentEmerald border border-accentEmerald/30'
+                          }`}
+                        >
+                          {stall.isOpen ? 'Force Close' : 'Open Stall'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

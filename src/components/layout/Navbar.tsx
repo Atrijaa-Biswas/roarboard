@@ -6,6 +6,8 @@ import { useUserStore } from '../../store/useUserStore';
 import { logout } from '../../hooks/useAuth';
 import { useVenueStore } from '../../store/useVenueStore';
 import { useAlertStore } from '../../store/useAlertStore';
+import { useFoodStore } from '../../store/useFoodStore';
+import { ForkKnife } from 'lucide-react';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -70,6 +72,17 @@ export default function Navbar() {
             )}
 
             {/* Notification Bell */}
+            {user?.role !== 'staff' && (
+              <button
+                onClick={() => useFoodStore.getState().setIsModalOpen(true)}
+                className="hidden lg:flex items-center gap-2 text-textSecondary hover:text-accentEmerald transition-colors outline-none"
+                aria-label="Open Food Stalls"
+              >
+                <ForkKnife className="w-5 h-5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Food</span>
+              </button>
+            )}
+
             <div className="relative" ref={panelRef}>
               <button
                 onClick={toggleNotifPanel}
