@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 export type IncidentType  = 'medical' | 'crowd_surge' | 'technical' | 'security' | 'fire';
 export type IncidentStatus = 'active' | 'in_progress' | 'resolved';
-export type LogCategory   = 'deploy' | 'alert' | 'incident' | 'resolve' | 'announce' | 'ai';
+export type LogCategory   = 'deploy' | 'alert' | 'incident' | 'resolve' | 'announce' | 'ai' | 'sys' | 'toggle';
 
 export interface Incident {
   id: string;

@@ -104,9 +104,7 @@ export default function AttendeeView() {
           onClick={fetchFoodStallOpen}
           className="text-textSecondary hover:text-accentEmerald flex flex-col items-center gap-0.5 outline-none transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.5 15.25a2.75 2.75 0 0 1-2.75-2.75v-4.5a2.75 2.75 0 0 1 2.74-2.75c1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75zm0 2.75a5.5 2.75 0 0 1-2.74-2.75v-4.5c0-1.5 1.25-2.75 2.74-2.75 1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75zM12.5 15.25a2.75 2.75 0 0 1-2.74-2.75v-4.5a2.75 2.75 0 0 1 2.74-2.75c1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75zm0 2.75a5.5 2.75 0 0 1-2.74-2.75v-4.5c0-1.5 1.25-2.75 2.74-2.75 1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75z" />
-          </svg>
+          <ForkKnife className="w-5 h-5" />
           <span className="text-[9px] font-bold">Food</span>
         </button>
 

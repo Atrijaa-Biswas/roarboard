@@ -56,7 +56,7 @@ export default function FoodStallManager() {
                 stall={stalls[currentStallId]}
                 onBack={() => setCurrentStallId(null)}
                 cart={cart}
-                onAdd={(item) => addToCart(item, currentStallId)}
+                onAdd={(item: MenuItem) => addToCart(item, currentStallId)}
                 onRemove={removeFromCart}
               />
             )}
@@ -87,7 +87,7 @@ export default function FoodStallManager() {
                 stall={stalls[currentStallId]}
                 onBack={() => setCurrentStallId(null)}
                 cart={cart}
-                onAdd={(item) => addToCart(item, currentStallId)}
+                onAdd={(item: MenuItem) => addToCart(item, currentStallId)}
                 onRemove={removeFromCart}
               />
             )}
