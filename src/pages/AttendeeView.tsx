@@ -5,8 +5,9 @@ import GateBoard from '../components/dashboard/GateBoard';
 import GeminiChat from '../components/ai/GeminiChat';
 import { useTickerUpdates } from '../hooks/useTickerUpdates';
 import { useVenueStore } from '../store/useVenueStore';
-import { Sparkles, BellRing } from 'lucide-react';
+import { Sparkles, BellRing, ForkKnife } from 'lucide-react';
 import { useAlertStore } from '../store/useAlertStore';
+// No longer needed
 
 export default function AttendeeView() {
   useTickerUpdates();
@@ -15,6 +16,39 @@ export default function AttendeeView() {
   const isFocusMode    = useVenueStore(state => state.isFocusMode);
   const unreadAlerts   = useAlertStore(state => state.alerts.filter(a => !a.isRead).length);
   const toggleNotifPanel = useAlertStore(state => state.toggleNotifPanel);
+  
+// Removed unused isFoodModalOpen state
+  
+  const stalls = [
+    { id: 1, name: 'Gate A Burgers', near: 'Gate A', menu: ['Classic Burger $8', 'Cheese Fries $5', 'Soda $3'] },
+    { id: 2, name: 'Taco Stand', near: 'Gate B', menu: ['Beef Taco $4', 'Quesadilla $6', 'Guac $3'] },
+    { id: 3, name: 'Pizza Slice', near: 'Gate C', menu: ['Pepperoni Slice $5', 'Garlic Knots $4', 'Drink $2'] },
+    { id: 4, name: 'Sushi Roll', near: 'Gate D', menu: ['California Roll $7', 'Miso Soup $4', 'Edamame $3'] },
+    { id: 5, name: 'Wing Zone', near: 'Gate E', menu: ['6 Wings $9', 'Celery $2', 'Ranch $1'] },
+    { id: 6, name: 'Falafel Cart', near: 'Gate F', menu: ['Falafel Pita $6', 'Hummus $4', 'Baklava $3'] },
+  ];
+
+  const toggleFoodModal = () => {
+    const sheet = document.getElementById('food-stall-sheet');
+    if (sheet) {
+      if (sheet.classList.contains('translate-y-full')) {
+        sheet.classList.remove('translate-y-full');
+      } else {
+        sheet.classList.add('translate-y-full');
+      }
+    }
+  };
+
+  const placeOrder = (stallName: string) => {
+    useAlertStore.getState().addAlert({
+      title: '🍔 Order Placed!',
+      body: `Your order from ${stallName} is confirmed. Pickup ready in 10 min.`,
+      severity: 'info',
+      source: 'system' as const,
+    });
+    toggleFoodModal(); // Close modal
+  };
+
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-pureBlack text-textPrimary relative">
@@ -94,17 +128,16 @@ export default function AttendeeView() {
           <span className="text-[9px] font-bold">Gates</span>
         </button>
 
-        {/* Centre AI FAB — elevated */}
-        <div className="relative -top-5">
-          <button
-            onClick={() => setIsChatOpen(true)}
-            className="w-14 h-14 bg-accentBlue text-white rounded-full shadow-[0_0_25px_rgba(59,130,246,0.6)] flex items-center justify-center outline-none hover:scale-110 active:scale-95 transition-all"
-            aria-label="Open AI"
-          >
-            <Sparkles className="w-6 h-6" />
-          </button>
-          <span className="absolute -top-1 -right-1 text-[8px] font-black bg-accentEmerald text-pureBlack rounded-full px-1 leading-4">AI</span>
-        </div>
+        {/* Centre Food Stall Finder — matches other nav icons */}
+        <button
+          onClick={toggleFoodModal}
+          className="text-textSecondary hover:text-accentEmerald flex flex-col items-center gap-0.5 outline-none transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.5 15.25a2.75 2.75 0 0 1-2.75-2.75v-4.5a2.75 2.75 0 0 1 2.74-2.75c1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75zm0 2.75a5.5 2.75 0 0 1-2.74-2.75v-4.5c0-1.5 1.25-2.75 2.74-2.75 1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75zM12.5 15.25a2.75 2.75 0 0 1-2.74-2.75v-4.5a2.75 2.75 0 0 1 2.74-2.75c1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75zm0 2.75a5.5 2.75 0 0 1-2.74-2.75v-4.5c0-1.5 1.25-2.75 2.74-2.75 1.25 0 2.67.75 2.74 2.75v4.5c0 1.5-1.25 2.75-2.74 2.75z" />
+          </svg>
+          <span className="text-[9px] font-bold">Food</span>
+        </button>
 
         {/* Alerts bell */}
         <button
@@ -132,6 +165,47 @@ export default function AttendeeView() {
             onClick={() => document.getElementById("mobile-gate-sheet")?.classList.add("translate-y-full")}
           />
           <GateBoard />
+        </div>
+      </div>
+
+      {/* ── Food Stall Finder Sheet ────────────────────────────────────────── */}
+      <div
+        id="food-stall-sheet"
+        className="lg:hidden fixed inset-x-0 bottom-0 z-40 transform translate-y-full transition-transform duration-500 ease-in-out pointer-events-auto flex flex-col max-h-[70vh] overflow-hidden"
+      >
+        <div className="glass-panel rounded-t-3xl border-b-0 flex-1 w-full p-4 pt-2 flex flex-col overflow-y-auto">
+          <div className="w-12 h-1.5 bg-borderSecondary rounded-full mx-auto mb-4 cursor-pointer self-start" 
+               onClick={toggleFoodModal} />
+          <h3 className="font-black text-lg text-white mb-4 tracking-tight flex items-center gap-2">
+            <ForkKnife className="w-6 h-6 text-accentEmerald" />
+            Nearby Food Stalls
+          </h3>
+          <div className="space-y-3">
+            {stalls.map(stall => (
+              <div key={stall.id} className="bg-surface/50 border border-borderSecondary/50 rounded-2xl p-4 hover:bg-surface/80 transition-all">
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-bold text-white text-base">{stall.name}</h4>
+                  <span className="text-[10px] bg-accentEmerald/20 text-accentEmerald font-bold px-2 py-0.5 rounded-full">
+                    Near {stall.near}
+                  </span>
+                </div>
+                <ul className="text-sm text-textSecondary space-y-1 mb-3">
+                  {stall.menu.map((item, i) => (
+                    <li key={i} className="flex justify-between">
+                      <span>{item}</span>
+                      <span className="font-bold text-white">{item.split('$')[1]}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => placeOrder(stall.name)}
+                  className="w-full bg-accentEmerald hover:bg-accentEmerald/90 text-pureBlack font-bold py-2.5 px-4 rounded-xl text-sm shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all flex items-center justify-center gap-2"
+                >
+                  Place Order
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
